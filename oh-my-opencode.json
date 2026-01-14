@@ -1,0 +1,120 @@
+{
+  "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json",
+  "google_auth": false,
+  "agents": {
+    "Sisyphus": {
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "webfetch": "allow",
+        "doom_loop": "allow",
+        "external_directory": "allow"
+      },
+      "prompt_append": "## Tool Priority Protocol (MANDATORY)\n\n### 1. Context Retrieval - ACE FIRST\n**BEFORE any code task (edit, suggest, analyze, debug):**\n- MUST call `mcp_ace-tool_search_context` first\n- Query in English natural language (What/Where/How)\n- Forbidden: Assumption-based answers without ACE retrieval\n- Forbidden: Direct grep/find as first choice\n- If context incomplete → recursive retrieval until full signatures obtained\n- Narrow search paths to specific project/module directories (avoid /home/user/ root)\n\n### 2. Tool Selection Matrix\n| Scenario | Primary Tool | Fallback |\n|----------|-------------|----------|\n| Semantic code search | `mcp_ace-tool_search_context` | explore agent |\n| Type errors / Problems | `mcp_idea_get_file_problems` | `lsp_diagnostics` |\n| Symbol definition | `lsp_goto_definition` | ACE |\n| Find all references | `lsp_find_references` | ACE |\n| Refactoring (rename) | `lsp_rename` | manual edit |\n| Latest community info / issues | `mcp_grok-search_web_search` | librarian agent |\n| Official documentation | context7 MCP | librarian agent |\n| Log triage (PZ) | `pz-log-triage` skill | grep with ERROR filter |\n| Server control (Pelican) | `pelican-panel-kit` skill | - |\n\n### 3. IDEA MCP Protocol (Java/Lua/PZ Mod Development)\n**IntelliJ IDEA MCP is the PRIMARY tool for Java and Project Zomboid mod development.**\n- **Java files (.java)**: ALWAYS use `mcp_idea_*` tools over `mcp_lsp_*` - IDEA's Java analysis is far superior\n- **Type checking**: `mcp_idea_get_file_problems` is authoritative for Java errors\n- **Navigation**: `mcp_idea_navigate_to_declaration`, `mcp_idea_find_usages` for Java symbols\n- **Refactoring**: Prefer IDEA's refactoring capabilities when available\n- **Before claiming Java code is correct**: MUST run `mcp_idea_get_file_problems` on modified files\n- **PZ Mod workflow**: Java patches → IDEA validation → Lua scripts → test in-game\n\n### 4. Anti-Laziness Rules\n- External library behavior unclear → MUST use `grok-search` or `librarian` first\n- Symbol location unknown → MUST use ACE or LSP first, NOT manual grep\n- Type errors exist → MUST run `mcp_idea_get_file_problems` before claiming done\n- Java code modified → MUST validate with IDEA MCP, not just syntax check\n\n### 5. Language Protocol\n- Tool/Agent interaction: **English**\n- User interaction: **Chinese** (unless user uses English)\n\n### 6. Code Style\n- Clean, efficient, zero redundancy\n- Comments: only when absolutely necessary (code should be self-documenting)\n- Minimal scope: change ONLY what's needed, never refactor while fixing bugs\n\n### 7. Edit Tool Protocol (CRITICAL)\n- **Edit is STRICT string replacement** - `oldString` must match file content EXACTLY (including whitespace/indentation)\n- **MUST Read before Edit** - Never edit a file you haven't read in this conversation; if unsure, re-read first\n- **On Edit failure (`oldString not found`)** - MUST follow this recovery flow:\n  1. Re-read the target file immediately\n  2. Identify the correct current content\n  3. Retry edit with the exact string from the fresh read\n- **Never guess** - If edit fails twice, stop and report the issue to user"
+    },
+    "Sisyphus-Junior": {
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "webfetch": "allow",
+        "doom_loop": "allow",
+        "external_directory": "allow"
+      }
+    },
+    "oracle": {
+      "model": "openai/gpt-5.2",
+      "reasoningEffort": "xhigh",
+      "permission": {
+        "edit": "deny",
+        "bash": "allow",
+        "read": "allow",
+        "webfetch": "allow",
+        "doom_loop": "allow",
+        "external_directory": "allow"
+      }
+    },
+    "librarian": {
+      "model": "google/gemini-3-flash-preview",
+      "permission": {
+        "edit": "deny",
+        "bash": "deny",
+        "read": "allow",
+        "webfetch": "allow",
+        "doom_loop": "allow",
+        "external_directory": "allow"
+      }
+    },
+    "explore": {
+      "model": "anthropic/claude-haiku-4-5-20251001",
+      "permission": {
+        "edit": "deny",
+        "bash": "allow",
+        "read": "allow",
+        "webfetch": "allow",
+        "doom_loop": "allow",
+        "external_directory": "allow"
+      }
+    },
+    "frontend-ui-ux-engineer": {
+      "model": "google/gemini-3-pro-preview",
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "webfetch": "allow",
+        "doom_loop": "allow",
+        "external_directory": "allow"
+      }
+    },
+    "document-writer": {
+      "model": "google/gemini-3-flash-preview",
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "webfetch": "allow",
+        "doom_loop": "allow",
+        "external_directory": "allow"
+      }
+    },
+    "multimodal-looker": {
+      "model": "google/gemini-3-flash-preview",
+      "permission": {
+        "edit": "deny",
+        "bash": "deny",
+        "read": "allow",
+        "webfetch": "allow",
+        "doom_loop": "allow",
+        "external_directory": "allow"
+      }
+    }
+  },
+  "categories": {
+    "visual": {
+      "model": "google/gemini-3-pro-preview"
+    },
+    "business-logic": {
+      "model": "openai/gpt-5.2"
+    },
+    "visual-engineering": {
+      "model": "google/gemini-3-pro-preview"
+    },
+    "artistry": {
+      "model": "google/gemini-3-pro-preview"
+    },
+    "writing": {
+      "model": "google/gemini-3-flash-preview"
+    }
+  },
+  "background_task": {
+    "defaultConcurrency": 5,
+    "providerConcurrency": {
+      "anthropic": 3,
+      "openai": 5,
+      "google": 10
+    },
+    "modelConcurrency": {
+      "anthropic/claude-opus-4-5": 2,
+      "anthropic/claude-haiku-4-5-20251001": 8,
+      "google/gemini-3-flash-preview": 10
+    }
+  }
+}

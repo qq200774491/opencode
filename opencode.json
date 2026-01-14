@@ -1,0 +1,206 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "*": "allow",
+    "bash": "allow",
+    "edit": "allow",
+    "read": "allow",
+    "webfetch": "allow",
+    "doom_loop": "allow",
+    "external_directory": "allow"
+  },
+  "default_agent": "Sisyphus",
+  "agent": {
+    "Sisyphus": {
+      "model": "anthropic/claude-opus-4-5-20251101",
+      "options": {
+        "thinking": {
+          "type": "enabled",
+          "budgetTokens": 32000
+        }
+      }
+    },
+    "oracle": {
+      "model": "openai/gpt-5.2",
+      "reasoningEffort": "xhigh",
+      "reasoningSummary": "detailed",
+      "textVerbosity": "medium"
+    },
+    "title": {
+      "model": "google/gemini-3-flash-preview"
+    },
+    "summary": {
+      "model": "google/gemini-3-flash-preview"
+    }
+  },
+  "plugin": [
+    "./opencode-anthropic-auth-proxy.mjs",
+    "oh-my-opencode",
+    "./opencode-openai-instructions-compat.mjs",
+    "opencode-antigravity-auth@1.2.8",
+    "./opencode-openai-codexlike-shim.mjs"
+  ],
+  "provider": {
+    "anthropic": {
+      "name": "cch",
+      "options": {
+        "baseURL": "http://127.0.0.1:23000/v1"
+      }
+    },
+    "google": {
+      "name": "Google",
+      "options": {
+        "baseURL": "http://172.29.136.18:23000/v1beta"
+      },
+      "models": {
+        "gemini-3-pro-preview": {
+          "name": "Gemini 3 Pro Preview",
+          "thinking": true,
+          "attachment": true,
+          "limit": {
+            "context": 1048576,
+            "output": 65535
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          }
+        },
+        "gemini-3-flash-preview": {
+          "name": "Gemini 3 Flash Preview",
+          "attachment": true,
+          "limit": {
+            "context": 1048576,
+            "output": 65536
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image",
+              "pdf"
+            ],
+            "output": [
+              "text"
+            ]
+          }
+        }
+      }
+    },
+    "openai": {
+      "name": "OpenAI",
+      "options": {
+        "reasoningEffort": "xhigh",
+        "reasoningSummary": "auto",
+        "textVerbosity": "medium",
+        "include": [
+          "reasoning.encrypted_content"
+        ],
+        "store": false,
+        "setCacheKey": true,
+        "baseURL": "http://127.0.0.1:23000/v1"
+      },
+      "models": {
+        "gpt-5.2": {
+          "name": "GPT 5.2 (OAuth)",
+          "limit": {
+            "context": 272000,
+            "output": 128000
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": {
+            "none": {
+              "reasoningEffort": "none",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "low": {
+              "reasoningEffort": "low",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "medium": {
+              "reasoningEffort": "medium",
+              "reasoningSummary": "auto",
+              "textVerbosity": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            },
+            "xhigh": {
+              "reasoningEffort": "xhigh",
+              "reasoningSummary": "detailed",
+              "textVerbosity": "medium"
+            }
+          }
+        }
+      }
+    }
+  },
+  "mcp": {
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "ctx7sk-1f0e8c7a-1b7d-4528-b4d9-d118dd37ac31"
+      },
+      "enabled": true,
+      "timeout": 120000
+    },
+    "ace-tool": {
+      "type": "local",
+      "command": [
+        "node",
+        "/home/kangwsldebian/ace-tool/dist/index.js",
+        "--base-url",
+        "https://acemcp.heroman.wtf/relay/",
+        "--token",
+        "ace_d2f9dc9d2b121ce1912fbe308b2a7de96c12be2b"
+      ],
+      "enabled": true,
+      "timeout": 120000
+    },
+    "grok-search": {
+      "type": "local",
+      "command": [
+        "/home/kangwsldebian/.local/bin/grok-search"
+      ],
+      "environment": {
+        "GROK_API_URL": "https://elysiver.h-e.top/v1",
+        "GROK_API_KEY": "sk-c80CTppNcG4VhAAWnJahM0HhIdRNgGekzXrIQiFMp1tJiDPL"
+      },
+      "enabled": true,
+      "timeout": 120000
+    },
+    "idea": {
+      "type": "local",
+      "command": [
+        "python3",
+        "/home/kangwsldebian/.codex/scripts/idea_mcp_legacy_sse_stdio_proxy.py"
+      ],
+      "environment": {
+        "IJ_MCP_SERVER_PORT": "64342",
+        "IJ_MCP_SERVER_PROJECT_PATH": "/home/kangwsldebian/pz-dev/idea-workspace"
+      },
+      "enabled": true,
+      "timeout": 120000
+    }
+  },
+  "model": "openai/gpt-5.2",
+  "small_model": "anthropic/claude-haiku-4-5-20251001"
+}
